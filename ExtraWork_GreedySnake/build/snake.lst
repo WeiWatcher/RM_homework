@@ -1,0 +1,589 @@
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"snake.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.file 1 "Core/Src/snake.c"
+  18              		.section	.text.GetRandomPos,"ax",%progbits
+  19              		.align	1
+  20              		.global	GetRandomPos
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	GetRandomPos:
+  26              	.LFB65:
+   1:Core/Src/snake.c **** #include <stdint.h>
+   2:Core/Src/snake.c **** #include <stdlib.h>
+   3:Core/Src/snake.c **** #include "main.h"
+   4:Core/Src/snake.c **** #include "OLED.h"
+   5:Core/Src/snake.c **** #include "snake.h"
+   6:Core/Src/snake.c **** 
+   7:Core/Src/snake.c **** 
+   8:Core/Src/snake.c **** Pos GetRandomPos()
+   9:Core/Src/snake.c **** {
+  27              		.loc 1 9 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 8
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 00B5     		push	{lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 4
+  34              		.cfi_offset 14, -4
+  35 0002 83B0     		sub	sp, sp, #12
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_offset 16
+  10:Core/Src/snake.c ****     Pos temp;
+  38              		.loc 1 10 5 view .LVU1
+  11:Core/Src/snake.c ****     temp.x = rand() % (4 + 1);
+  39              		.loc 1 11 5 view .LVU2
+  40              		.loc 1 11 14 is_stmt 0 view .LVU3
+  41 0004 FFF7FEFF 		bl	rand
+  42              	.LVL0:
+  43              		.loc 1 11 21 discriminator 1 view .LVU4
+  44 0008 144A     		ldr	r2, .L3
+  45 000a 82FB0032 		smull	r3, r2, r2, r0
+  46 000e C317     		asrs	r3, r0, #31
+  47 0010 C3EB6203 		rsb	r3, r3, r2, asr #1
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s 			page 2
+
+
+  48 0014 03EB8303 		add	r3, r3, r3, lsl #2
+  49 0018 C31A     		subs	r3, r0, r3
+  50              		.loc 1 11 12 discriminator 1 view .LVU5
+  51 001a 8DF80030 		strb	r3, [sp]
+  12:Core/Src/snake.c ****     temp.y = rand() % (20 + 1);
+  52              		.loc 1 12 5 is_stmt 1 view .LVU6
+  53              		.loc 1 12 14 is_stmt 0 view .LVU7
+  54 001e FFF7FEFF 		bl	rand
+  55              	.LVL1:
+  56              		.loc 1 12 21 discriminator 1 view .LVU8
+  57 0022 0F4A     		ldr	r2, .L3+4
+  58 0024 82FB0032 		smull	r3, r2, r2, r0
+  59 0028 C317     		asrs	r3, r0, #31
+  60 002a C3EBA203 		rsb	r3, r3, r2, asr #2
+  61 002e 03EB4303 		add	r3, r3, r3, lsl #1
+  62 0032 C3EBC303 		rsb	r3, r3, r3, lsl #3
+  63 0036 C31A     		subs	r3, r0, r3
+  64              		.loc 1 12 12 discriminator 1 view .LVU9
+  65 0038 8DF80130 		strb	r3, [sp, #1]
+  13:Core/Src/snake.c ****     return temp;
+  66              		.loc 1 13 5 is_stmt 1 view .LVU10
+  67              		.loc 1 13 12 is_stmt 0 view .LVU11
+  68 003c BDF80030 		ldrh	r3, [sp]
+  69 0040 ADF80430 		strh	r3, [sp, #4]	@ movhi
+  70 0044 0020     		movs	r0, #0
+  71 0046 9DF80430 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+  72 004a 63F30700 		bfi	r0, r3, #0, #8
+  73 004e 9DF80530 		ldrb	r3, [sp, #5]	@ zero_extendqisi2
+  74 0052 63F30F20 		bfi	r0, r3, #8, #8
+  14:Core/Src/snake.c **** }
+  75              		.loc 1 14 1 view .LVU12
+  76 0056 03B0     		add	sp, sp, #12
+  77              	.LCFI2:
+  78              		.cfi_def_cfa_offset 4
+  79              		@ sp needed
+  80 0058 5DF804FB 		ldr	pc, [sp], #4
+  81              	.L4:
+  82              		.align	2
+  83              	.L3:
+  84 005c 67666666 		.word	1717986919
+  85 0060 310CC330 		.word	818089009
+  86              		.cfi_endproc
+  87              	.LFE65:
+  89              		.section	.text.PrintAll,"ax",%progbits
+  90              		.align	1
+  91              		.global	PrintAll
+  92              		.syntax unified
+  93              		.thumb
+  94              		.thumb_func
+  96              	PrintAll:
+  97              	.LFB66:
+  15:Core/Src/snake.c **** 
+  16:Core/Src/snake.c **** Pos Snake[120] = {0};
+  17:Core/Src/snake.c **** uint8_t length = 1;
+  18:Core/Src/snake.c **** direct dir = Right;
+  19:Core/Src/snake.c **** Pos Food;
+  20:Core/Src/snake.c **** int isEnd = 0;
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s 			page 3
+
+
+  21:Core/Src/snake.c **** 
+  22:Core/Src/snake.c **** 
+  23:Core/Src/snake.c **** void PrintAll()//因为C面向过程，我们就把蛇焊死在函数里降低开发复杂度
+  24:Core/Src/snake.c **** //该函数没有边界判断，执行时必须保证在此之前执行过检查函数
+  25:Core/Src/snake.c **** {
+  98              		.loc 1 25 1 is_stmt 1 view -0
+  99              		.cfi_startproc
+ 100              		@ args = 0, pretend = 0, frame = 0
+ 101              		@ frame_needed = 0, uses_anonymous_args = 0
+ 102 0000 10B5     		push	{r4, lr}
+ 103              	.LCFI3:
+ 104              		.cfi_def_cfa_offset 8
+ 105              		.cfi_offset 4, -8
+ 106              		.cfi_offset 14, -4
+  26:Core/Src/snake.c ****     OLED_operate_gram(PEN_CLEAR);
+ 107              		.loc 1 26 5 view .LVU14
+ 108 0002 0020     		movs	r0, #0
+ 109 0004 FFF7FEFF 		bl	OLED_operate_gram
+ 110              	.LVL2:
+  27:Core/Src/snake.c ****     for(int i = 0;i < length;i ++)
+ 111              		.loc 1 27 5 view .LVU15
+ 112              	.LBB2:
+ 113              		.loc 1 27 9 view .LVU16
+ 114              		.loc 1 27 13 is_stmt 0 view .LVU17
+ 115 0008 0024     		movs	r4, #0
+ 116              		.loc 1 27 5 view .LVU18
+ 117 000a 09E0     		b	.L6
+ 118              	.LVL3:
+ 119              	.L7:
+  28:Core/Src/snake.c ****     {
+  29:Core/Src/snake.c ****         OLED_show_char(Snake[i].x,Snake[i].y,'#');
+ 120              		.loc 1 29 9 is_stmt 1 view .LVU19
+ 121 000c 0A4B     		ldr	r3, .L9
+ 122 000e 03EB4401 		add	r1, r3, r4, lsl #1
+ 123 0012 2322     		movs	r2, #35
+ 124 0014 4978     		ldrb	r1, [r1, #1]	@ zero_extendqisi2
+ 125 0016 13F81400 		ldrb	r0, [r3, r4, lsl #1]	@ zero_extendqisi2
+ 126 001a FFF7FEFF 		bl	OLED_show_char
+ 127              	.LVL4:
+  27:Core/Src/snake.c ****     for(int i = 0;i < length;i ++)
+ 128              		.loc 1 27 32 discriminator 3 view .LVU20
+ 129 001e 0134     		adds	r4, r4, #1
+ 130              	.LVL5:
+ 131              	.L6:
+  27:Core/Src/snake.c ****     for(int i = 0;i < length;i ++)
+ 132              		.loc 1 27 21 discriminator 1 view .LVU21
+ 133 0020 064B     		ldr	r3, .L9+4
+ 134 0022 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 135 0024 A342     		cmp	r3, r4
+ 136 0026 F1DC     		bgt	.L7
+ 137              	.LBE2:
+  30:Core/Src/snake.c ****     }
+  31:Core/Src/snake.c ****     OLED_show_char(Food.x,Food.y,'F');
+ 138              		.loc 1 31 5 view .LVU22
+ 139 0028 054B     		ldr	r3, .L9+8
+ 140 002a 4622     		movs	r2, #70
+ 141 002c 5978     		ldrb	r1, [r3, #1]	@ zero_extendqisi2
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s 			page 4
+
+
+ 142 002e 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 143 0030 FFF7FEFF 		bl	OLED_show_char
+ 144              	.LVL6:
+  32:Core/Src/snake.c **** }
+ 145              		.loc 1 32 1 is_stmt 0 view .LVU23
+ 146 0034 10BD     		pop	{r4, pc}
+ 147              	.LVL7:
+ 148              	.L10:
+ 149              		.loc 1 32 1 view .LVU24
+ 150 0036 00BF     		.align	2
+ 151              	.L9:
+ 152 0038 00000000 		.word	Snake
+ 153 003c 00000000 		.word	length
+ 154 0040 00000000 		.word	Food
+ 155              		.cfi_endproc
+ 156              	.LFE66:
+ 158              		.section	.text.Move,"ax",%progbits
+ 159              		.align	1
+ 160              		.global	Move
+ 161              		.syntax unified
+ 162              		.thumb
+ 163              		.thumb_func
+ 165              	Move:
+ 166              	.LFB67:
+  33:Core/Src/snake.c **** 
+  34:Core/Src/snake.c **** void Move()//这函数集成了边界判断和吃东西判断，既然都面向过程了，就不�
+  35:Core/Src/snake.c **** {
+ 167              		.loc 1 35 1 is_stmt 1 view -0
+ 168              		.cfi_startproc
+ 169              		@ args = 0, pretend = 0, frame = 0
+ 170              		@ frame_needed = 0, uses_anonymous_args = 0
+ 171 0000 08B5     		push	{r3, lr}
+ 172              	.LCFI4:
+ 173              		.cfi_def_cfa_offset 8
+ 174              		.cfi_offset 3, -8
+ 175              		.cfi_offset 14, -4
+  36:Core/Src/snake.c **** 
+  37:Core/Src/snake.c **** 
+  38:Core/Src/snake.c ****     for(int i = length - 1;i > 0;i --)//头以外的身子动
+ 176              		.loc 1 38 5 view .LVU26
+ 177              	.LBB3:
+ 178              		.loc 1 38 9 view .LVU27
+ 179              		.loc 1 38 24 is_stmt 0 view .LVU28
+ 180 0002 394B     		ldr	r3, .L30
+ 181 0004 93F800E0 		ldrb	lr, [r3]	@ zero_extendqisi2
+ 182              		.loc 1 38 13 view .LVU29
+ 183 0008 0EF1FF3C 		add	ip, lr, #-1
+ 184              	.LVL8:
+ 185              		.loc 1 38 13 view .LVU30
+ 186 000c 6246     		mov	r2, ip
+ 187              		.loc 1 38 5 view .LVU31
+ 188 000e 0CE0     		b	.L12
+ 189              	.LVL9:
+ 190              	.L13:
+  39:Core/Src/snake.c ****     {
+  40:Core/Src/snake.c ****         Snake[i].x = Snake[i - 1].x;
+ 191              		.loc 1 40 9 is_stmt 1 view .LVU32
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s 			page 5
+
+
+ 192              		.loc 1 40 30 is_stmt 0 view .LVU33
+ 193 0010 511E     		subs	r1, r2, #1
+ 194              		.loc 1 40 34 view .LVU34
+ 195 0012 364B     		ldr	r3, .L30+4
+ 196 0014 13F81100 		ldrb	r0, [r3, r1, lsl #1]	@ zero_extendqisi2
+ 197              		.loc 1 40 20 view .LVU35
+ 198 0018 03F81200 		strb	r0, [r3, r2, lsl #1]
+  41:Core/Src/snake.c ****         Snake[i].y = Snake[i - 1].y;
+ 199              		.loc 1 41 9 is_stmt 1 view .LVU36
+ 200              		.loc 1 41 34 is_stmt 0 view .LVU37
+ 201 001c 03EB4100 		add	r0, r3, r1, lsl #1
+ 202 0020 4078     		ldrb	r0, [r0, #1]	@ zero_extendqisi2
+ 203              		.loc 1 41 20 view .LVU38
+ 204 0022 03EB4203 		add	r3, r3, r2, lsl #1
+ 205 0026 5870     		strb	r0, [r3, #1]
+  38:Core/Src/snake.c ****     {
+ 206              		.loc 1 38 36 is_stmt 1 discriminator 3 view .LVU39
+ 207              	.LVL10:
+  38:Core/Src/snake.c ****     {
+ 208              		.loc 1 38 36 is_stmt 0 discriminator 3 view .LVU40
+ 209 0028 0A46     		mov	r2, r1
+ 210              	.LVL11:
+ 211              	.L12:
+  38:Core/Src/snake.c ****     {
+ 212              		.loc 1 38 30 is_stmt 1 discriminator 1 view .LVU41
+ 213 002a 002A     		cmp	r2, #0
+ 214 002c F0DC     		bgt	.L13
+  38:Core/Src/snake.c ****     {
+ 215              		.loc 1 38 30 is_stmt 0 discriminator 1 view .LVU42
+ 216              	.LBE3:
+ 217              	.LBB4:
+  42:Core/Src/snake.c ****     }
+  43:Core/Src/snake.c **** 
+  44:Core/Src/snake.c ****     for(int i = length - 1;i > 1;i --)
+ 218              		.loc 1 44 13 view .LVU43
+ 219 002e 6346     		mov	r3, ip
+ 220 0030 00E0     		b	.L14
+ 221              	.LVL12:
+ 222              	.L15:
+ 223              		.loc 1 44 36 is_stmt 1 discriminator 2 view .LVU44
+ 224 0032 013B     		subs	r3, r3, #1
+ 225              	.LVL13:
+ 226              	.L14:
+ 227              		.loc 1 44 30 discriminator 1 view .LVU45
+ 228 0034 012B     		cmp	r3, #1
+ 229 0036 0FDD     		ble	.L16
+  45:Core/Src/snake.c ****     {
+  46:Core/Src/snake.c ****         if(Snake[0].x == Snake[i].x && Snake[0].y == Snake[i].y)
+ 230              		.loc 1 46 9 view .LVU46
+ 231              		.loc 1 46 20 is_stmt 0 view .LVU47
+ 232 0038 2C4A     		ldr	r2, .L30+4
+ 233 003a 1178     		ldrb	r1, [r2]	@ zero_extendqisi2
+ 234              		.loc 1 46 34 view .LVU48
+ 235 003c 12F81320 		ldrb	r2, [r2, r3, lsl #1]	@ zero_extendqisi2
+ 236              		.loc 1 46 11 view .LVU49
+ 237 0040 9142     		cmp	r1, r2
+ 238 0042 F6D1     		bne	.L15
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s 			page 6
+
+
+ 239              		.loc 1 46 48 discriminator 1 view .LVU50
+ 240 0044 294A     		ldr	r2, .L30+4
+ 241 0046 5178     		ldrb	r1, [r2, #1]	@ zero_extendqisi2
+ 242              		.loc 1 46 62 discriminator 1 view .LVU51
+ 243 0048 02EB4302 		add	r2, r2, r3, lsl #1
+ 244 004c 5278     		ldrb	r2, [r2, #1]	@ zero_extendqisi2
+ 245              		.loc 1 46 37 discriminator 1 view .LVU52
+ 246 004e 9142     		cmp	r1, r2
+ 247 0050 EFD1     		bne	.L15
+  47:Core/Src/snake.c ****         {
+  48:Core/Src/snake.c ****             isEnd = 1;
+ 248              		.loc 1 48 13 is_stmt 1 view .LVU53
+ 249              		.loc 1 48 19 is_stmt 0 view .LVU54
+ 250 0052 274B     		ldr	r3, .L30+8
+ 251              	.LVL14:
+ 252              		.loc 1 48 19 view .LVU55
+ 253 0054 0122     		movs	r2, #1
+ 254 0056 1A60     		str	r2, [r3]
+  49:Core/Src/snake.c ****             break;
+ 255              		.loc 1 49 13 is_stmt 1 view .LVU56
+ 256              	.L16:
+ 257              	.LBE4:
+  50:Core/Src/snake.c ****         }
+  51:Core/Src/snake.c ****     }
+  52:Core/Src/snake.c **** 
+  53:Core/Src/snake.c ****         switch(dir)//头动
+ 258              		.loc 1 53 9 view .LVU57
+ 259 0058 264B     		ldr	r3, .L30+12
+ 260 005a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 261 005c 032B     		cmp	r3, #3
+ 262 005e 07D8     		bhi	.L18
+ 263 0060 DFE803F0 		tbb	[pc, r3]
+ 264              	.L20:
+ 265 0064 02       		.byte	(.L23-.L20)/2
+ 266 0065 16       		.byte	(.L22-.L20)/2
+ 267 0066 20       		.byte	(.L21-.L20)/2
+ 268 0067 1B       		.byte	(.L19-.L20)/2
+ 269              		.p2align 1
+ 270              	.L23:
+  54:Core/Src/snake.c ****     {
+  55:Core/Src/snake.c ****         case Up:
+  56:Core/Src/snake.c ****         Snake[0].x -- ;
+ 271              		.loc 1 56 9 view .LVU58
+ 272              		.loc 1 56 17 is_stmt 0 view .LVU59
+ 273 0068 204A     		ldr	r2, .L30+4
+ 274 006a 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 275              		.loc 1 56 20 view .LVU60
+ 276 006c 013B     		subs	r3, r3, #1
+ 277 006e 1370     		strb	r3, [r2]
+  57:Core/Src/snake.c ****         break;
+ 278              		.loc 1 57 9 is_stmt 1 view .LVU61
+ 279              	.L18:
+  58:Core/Src/snake.c ****         case Down:
+  59:Core/Src/snake.c ****         Snake[0].x ++ ;
+  60:Core/Src/snake.c ****         break;
+  61:Core/Src/snake.c ****         case Right:
+  62:Core/Src/snake.c ****         Snake[0].y ++ ;
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s 			page 7
+
+
+  63:Core/Src/snake.c ****         break;
+  64:Core/Src/snake.c ****         case Left:
+  65:Core/Src/snake.c ****         Snake[0].y -- ;
+  66:Core/Src/snake.c ****         break;
+  67:Core/Src/snake.c ****     }
+  68:Core/Src/snake.c **** 
+  69:Core/Src/snake.c ****     //检查边界在这里发生
+  70:Core/Src/snake.c ****     if(Snake[0].x > 4 || Snake[0].y > 20) isEnd = 1;
+ 280              		.loc 1 70 5 view .LVU62
+ 281              		.loc 1 70 16 is_stmt 0 view .LVU63
+ 282 0070 1E4B     		ldr	r3, .L30+4
+ 283 0072 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 284              		.loc 1 70 7 view .LVU64
+ 285 0074 042B     		cmp	r3, #4
+ 286 0076 03D8     		bhi	.L24
+ 287              		.loc 1 70 34 discriminator 2 view .LVU65
+ 288 0078 1C4A     		ldr	r2, .L30+4
+ 289 007a 5278     		ldrb	r2, [r2, #1]	@ zero_extendqisi2
+ 290              		.loc 1 70 23 discriminator 2 view .LVU66
+ 291 007c 142A     		cmp	r2, #20
+ 292 007e 02D9     		bls	.L25
+ 293              	.L24:
+ 294              		.loc 1 70 43 is_stmt 1 discriminator 3 view .LVU67
+ 295              		.loc 1 70 49 is_stmt 0 discriminator 3 view .LVU68
+ 296 0080 1B4A     		ldr	r2, .L30+8
+ 297 0082 0121     		movs	r1, #1
+ 298 0084 1160     		str	r1, [r2]
+ 299              	.L25:
+  71:Core/Src/snake.c **** 
+  72:Core/Src/snake.c ****     //检查吃东西
+  73:Core/Src/snake.c ****     if(Snake[0].x == Food.x && Snake[0].y == Food.y)
+ 300              		.loc 1 73 5 is_stmt 1 view .LVU69
+ 301              		.loc 1 73 26 is_stmt 0 view .LVU70
+ 302 0086 1C4A     		ldr	r2, .L30+16
+ 303 0088 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 304              		.loc 1 73 7 view .LVU71
+ 305 008a 9342     		cmp	r3, r2
+ 306 008c 0FD0     		beq	.L29
+ 307              	.L11:
+  74:Core/Src/snake.c ****     {
+  75:Core/Src/snake.c ****         Snake[length].x = Snake[length - 1].x;
+  76:Core/Src/snake.c ****         Snake[length].y = Snake[length - 1].y;
+  77:Core/Src/snake.c ****         //开启下一段身子
+  78:Core/Src/snake.c ****         length ++;
+  79:Core/Src/snake.c ****         //长度增加
+  80:Core/Src/snake.c ****         Food = GetRandomPos();
+  81:Core/Src/snake.c ****         //更新食物位置
+  82:Core/Src/snake.c ****     }
+  83:Core/Src/snake.c **** 
+  84:Core/Src/snake.c ****     // OLED_refresh_gram();
+  85:Core/Src/snake.c **** }...
+ 308              		.loc 1 85 1 view .LVU72
+ 309 008e 08BD     		pop	{r3, pc}
+ 310              	.L22:
+  59:Core/Src/snake.c ****         Snake[0].x ++ ;
+ 311              		.loc 1 59 9 is_stmt 1 view .LVU73
+  59:Core/Src/snake.c ****         Snake[0].x ++ ;
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s 			page 8
+
+
+ 312              		.loc 1 59 17 is_stmt 0 view .LVU74
+ 313 0090 164A     		ldr	r2, .L30+4
+ 314 0092 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+  59:Core/Src/snake.c ****         Snake[0].x ++ ;
+ 315              		.loc 1 59 20 view .LVU75
+ 316 0094 0133     		adds	r3, r3, #1
+ 317 0096 1370     		strb	r3, [r2]
+  60:Core/Src/snake.c ****         break;
+ 318              		.loc 1 60 9 is_stmt 1 view .LVU76
+ 319 0098 EAE7     		b	.L18
+ 320              	.L19:
+  62:Core/Src/snake.c ****         Snake[0].y ++ ;
+ 321              		.loc 1 62 9 view .LVU77
+  62:Core/Src/snake.c ****         Snake[0].y ++ ;
+ 322              		.loc 1 62 17 is_stmt 0 view .LVU78
+ 323 009a 144A     		ldr	r2, .L30+4
+ 324 009c 5378     		ldrb	r3, [r2, #1]	@ zero_extendqisi2
+  62:Core/Src/snake.c ****         Snake[0].y ++ ;
+ 325              		.loc 1 62 20 view .LVU79
+ 326 009e 0133     		adds	r3, r3, #1
+ 327 00a0 5370     		strb	r3, [r2, #1]
+  63:Core/Src/snake.c ****         break;
+ 328              		.loc 1 63 9 is_stmt 1 view .LVU80
+ 329 00a2 E5E7     		b	.L18
+ 330              	.L21:
+  65:Core/Src/snake.c ****         Snake[0].y -- ;
+ 331              		.loc 1 65 9 view .LVU81
+  65:Core/Src/snake.c ****         Snake[0].y -- ;
+ 332              		.loc 1 65 17 is_stmt 0 view .LVU82
+ 333 00a4 114A     		ldr	r2, .L30+4
+ 334 00a6 5378     		ldrb	r3, [r2, #1]	@ zero_extendqisi2
+  65:Core/Src/snake.c ****         Snake[0].y -- ;
+ 335              		.loc 1 65 20 view .LVU83
+ 336 00a8 013B     		subs	r3, r3, #1
+ 337 00aa 5370     		strb	r3, [r2, #1]
+  66:Core/Src/snake.c ****         break;
+ 338              		.loc 1 66 9 is_stmt 1 view .LVU84
+ 339 00ac E0E7     		b	.L18
+ 340              	.L29:
+  73:Core/Src/snake.c ****     if(Snake[0].x == Food.x && Snake[0].y == Food.y)
+ 341              		.loc 1 73 40 is_stmt 0 discriminator 1 view .LVU85
+ 342 00ae 0F4B     		ldr	r3, .L30+4
+ 343 00b0 5A78     		ldrb	r2, [r3, #1]	@ zero_extendqisi2
+  73:Core/Src/snake.c ****     if(Snake[0].x == Food.x && Snake[0].y == Food.y)
+ 344              		.loc 1 73 50 discriminator 1 view .LVU86
+ 345 00b2 114B     		ldr	r3, .L30+16
+ 346 00b4 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+  73:Core/Src/snake.c ****     if(Snake[0].x == Food.x && Snake[0].y == Food.y)
+ 347              		.loc 1 73 29 discriminator 1 view .LVU87
+ 348 00b6 9A42     		cmp	r2, r3
+ 349 00b8 E9D1     		bne	.L11
+  75:Core/Src/snake.c ****         Snake[length].x = Snake[length - 1].x;
+ 350              		.loc 1 75 9 is_stmt 1 view .LVU88
+  75:Core/Src/snake.c ****         Snake[length].x = Snake[length - 1].x;
+ 351              		.loc 1 75 44 is_stmt 0 view .LVU89
+ 352 00ba 0C4B     		ldr	r3, .L30+4
+ 353 00bc 13F81C20 		ldrb	r2, [r3, ip, lsl #1]	@ zero_extendqisi2
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s 			page 9
+
+
+  75:Core/Src/snake.c ****         Snake[length].x = Snake[length - 1].x;
+ 354              		.loc 1 75 25 view .LVU90
+ 355 00c0 03F81E20 		strb	r2, [r3, lr, lsl #1]
+  76:Core/Src/snake.c ****         Snake[length].y = Snake[length - 1].y;
+ 356              		.loc 1 76 9 is_stmt 1 view .LVU91
+  76:Core/Src/snake.c ****         Snake[length].y = Snake[length - 1].y;
+ 357              		.loc 1 76 44 is_stmt 0 view .LVU92
+ 358 00c4 03EB4C0C 		add	ip, r3, ip, lsl #1
+ 359 00c8 9CF80120 		ldrb	r2, [ip, #1]	@ zero_extendqisi2
+  76:Core/Src/snake.c ****         Snake[length].y = Snake[length - 1].y;
+ 360              		.loc 1 76 25 view .LVU93
+ 361 00cc 03EB4E03 		add	r3, r3, lr, lsl #1
+ 362 00d0 5A70     		strb	r2, [r3, #1]
+  78:Core/Src/snake.c ****         length ++;
+ 363              		.loc 1 78 9 is_stmt 1 view .LVU94
+  78:Core/Src/snake.c ****         length ++;
+ 364              		.loc 1 78 16 is_stmt 0 view .LVU95
+ 365 00d2 0EF1010E 		add	lr, lr, #1
+ 366 00d6 044B     		ldr	r3, .L30
+ 367 00d8 83F800E0 		strb	lr, [r3]
+  80:Core/Src/snake.c ****         Food = GetRandomPos();
+ 368              		.loc 1 80 9 is_stmt 1 view .LVU96
+  80:Core/Src/snake.c ****         Food = GetRandomPos();
+ 369              		.loc 1 80 16 is_stmt 0 view .LVU97
+ 370 00dc FFF7FEFF 		bl	GetRandomPos
+ 371              	.LVL15:
+ 372 00e0 054B     		ldr	r3, .L30+16
+ 373 00e2 1880     		strh	r0, [r3]	@ movhi
+ 374              		.loc 1 85 1 view .LVU98
+ 375 00e4 D3E7     		b	.L11
+ 376              	.L31:
+ 377 00e6 00BF     		.align	2
+ 378              	.L30:
+ 379 00e8 00000000 		.word	length
+ 380 00ec 00000000 		.word	Snake
+ 381 00f0 00000000 		.word	isEnd
+ 382 00f4 00000000 		.word	dir
+ 383 00f8 00000000 		.word	Food
+ 384              		.cfi_endproc
+ 385              	.LFE67:
+ 387              		.global	isEnd
+ 388              		.section	.bss.isEnd,"aw",%nobits
+ 389              		.align	2
+ 392              	isEnd:
+ 393 0000 00000000 		.space	4
+ 394              		.global	Food
+ 395              		.section	.bss.Food,"aw",%nobits
+ 396              		.align	2
+ 399              	Food:
+ 400 0000 0000     		.space	2
+ 401              		.global	dir
+ 402              		.section	.data.dir,"aw"
+ 405              	dir:
+ 406 0000 03       		.byte	3
+ 407              		.global	length
+ 408              		.section	.data.length,"aw"
+ 411              	length:
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s 			page 10
+
+
+ 412 0000 01       		.byte	1
+ 413              		.global	Snake
+ 414              		.section	.bss.Snake,"aw",%nobits
+ 415              		.align	2
+ 418              	Snake:
+ 419 0000 00000000 		.space	240
+ 419      00000000 
+ 419      00000000 
+ 419      00000000 
+ 419      00000000 
+ 420              		.text
+ 421              	.Letext0:
+ 422              		.file 2 "D:/ProgramForRM/ARM_GNU_Toolchain/14.3 rel1/arm-none-eabi/include/machine/_default_types.
+ 423              		.file 3 "D:/ProgramForRM/ARM_GNU_Toolchain/14.3 rel1/arm-none-eabi/include/sys/_stdint.h"
+ 424              		.file 4 "Core/Inc/OLED.h"
+ 425              		.file 5 "Core/Inc/snake.h"
+ 426              		.file 6 "D:/ProgramForRM/ARM_GNU_Toolchain/14.3 rel1/arm-none-eabi/include/stdlib.h"
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s 			page 11
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 snake.c
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:19     .text.GetRandomPos:00000000 $t
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:25     .text.GetRandomPos:00000000 GetRandomPos
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:84     .text.GetRandomPos:0000005c $d
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:90     .text.PrintAll:00000000 $t
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:96     .text.PrintAll:00000000 PrintAll
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:152    .text.PrintAll:00000038 $d
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:418    .bss.Snake:00000000 Snake
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:411    .data.length:00000000 length
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:399    .bss.Food:00000000 Food
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:159    .text.Move:00000000 $t
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:165    .text.Move:00000000 Move
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:265    .text.Move:00000064 $d
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:269    .text.Move:00000068 $t
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:379    .text.Move:000000e8 $d
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:392    .bss.isEnd:00000000 isEnd
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:405    .data.dir:00000000 dir
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:389    .bss.isEnd:00000000 $d
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:396    .bss.Food:00000000 $d
+C:\Users\WANGXI~1\AppData\Local\Temp\ccOdB8HR.s:415    .bss.Snake:00000000 $d
+
+UNDEFINED SYMBOLS
+rand
+OLED_operate_gram
+OLED_show_char
