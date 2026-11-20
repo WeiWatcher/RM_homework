@@ -1,0 +1,655 @@
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"WEI_can.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/WEI_can.c"
+  20              		.section	.text.WEI_CAN_RxExplain,"ax",%progbits
+  21              		.align	1
+  22              		.global	WEI_CAN_RxExplain
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	WEI_CAN_RxExplain:
+  28              	.LVL0:
+  29              	.LFB135:
+   1:Core/Src/WEI_can.c **** #include "main.h"
+   2:Core/Src/WEI_can.c **** #include "can.h"
+   3:Core/Src/WEI_can.c **** #include "WEI_can.h"
+   4:Core/Src/WEI_can.c **** #include <string.h>
+   5:Core/Src/WEI_can.c **** 
+   6:Core/Src/WEI_can.c **** void WEI_CAN_RxExchange(CAN_HandleTypeDef* _hcan,uint32_t fifox/*接收邮箱*/,DJI_Motor_Controlle
+   7:Core/Src/WEI_can.c **** {
+   8:Core/Src/WEI_can.c ****     uint8_t can_rx_buff[8];
+   9:Core/Src/WEI_can.c ****     static CAN_RxHeaderTypeDef rxconf; //接收头段
+  10:Core/Src/WEI_can.c ****     CANInstance* motor_this = NULL;
+  11:Core/Src/WEI_can.c ****     while(HAL_CAN_GetRxFifoFillLevel(_hcan,fifox))
+  12:Core/Src/WEI_can.c ****     {
+  13:Core/Src/WEI_can.c ****         if(HAL_CAN_GetRxMessage(_hcan,fifox,&rxconf,can_rx_buff) == HAL_OK)
+  14:Core/Src/WEI_can.c ****         //依据GetRxMessage得到的头段确定this指向谁
+  15:Core/Src/WEI_can.c ****         {
+  16:Core/Src/WEI_can.c ****             motor_this = NULL;
+  17:Core/Src/WEI_can.c **** 
+  18:Core/Src/WEI_can.c ****             for(int i = 0;i < 4;i ++)
+  19:Core/Src/WEI_can.c ****             {
+  20:Core/Src/WEI_can.c ****                 if(line->motor[i] != NULL && line->motor[i]->this != NULL && line->motor[i]->rx_id 
+  21:Core/Src/WEI_can.c ****             }
+  22:Core/Src/WEI_can.c ****             
+  23:Core/Src/WEI_can.c ****             if(motor_this == NULL) 
+  24:Core/Src/WEI_can.c ****             {
+  25:Core/Src/WEI_can.c ****                 line->statue = WEI_ERROR;
+  26:Core/Src/WEI_can.c ****             }
+  27:Core/Src/WEI_can.c **** 
+  28:Core/Src/WEI_can.c ****             motor_this->rx_len = rxconf.DLC; //保存接收到的数据长度
+  29:Core/Src/WEI_can.c ****             memcpy(motor_this->rx_buff,can_rx_buff,rxconf.DLC); //消息拷贝到对应实例
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s 			page 2
+
+
+  30:Core/Src/WEI_can.c ****             motor_this->this->last_ecd = motor_this->this->ecd;
+  31:Core/Src/WEI_can.c **** 
+  32:Core/Src/WEI_can.c ****             //解析电机数据
+  33:Core/Src/WEI_can.c ****             WEI_CAN_RxExplain(motor_this->rx_buff,motor_this->this);//转换数据到目标电机�
+  34:Core/Src/WEI_can.c **** 
+  35:Core/Src/WEI_can.c ****             //处理数据
+  36:Core/Src/WEI_can.c ****             motor_this->this ->angle_siggle_round = 360.0f/8192.0f * (float)motor_this->this ->ecd;
+  37:Core/Src/WEI_can.c ****             motor_this->this ->speed_aps = (1.0f - 0.85f/*给上次数据加权*/) * motor_this->th
+  38:Core/Src/WEI_can.c ****             motor_this->this ->real_current_handle = (1.0f - 0.5f) * motor_this->this ->real_curren
+  39:Core/Src/WEI_can.c ****             
+  40:Core/Src/WEI_can.c ****             if(motor_this->this ->ecd - motor_this->this ->last_ecd > 4096)
+  41:Core/Src/WEI_can.c ****             {
+  42:Core/Src/WEI_can.c ****                 motor_this->this ->total_round --;
+  43:Core/Src/WEI_can.c ****             }
+  44:Core/Src/WEI_can.c ****             else if(motor_this->this ->ecd - motor_this->this ->last_ecd < -4096)
+  45:Core/Src/WEI_can.c ****             {
+  46:Core/Src/WEI_can.c ****                 motor_this->this ->total_round ++;
+  47:Core/Src/WEI_can.c ****             }
+  48:Core/Src/WEI_can.c **** 
+  49:Core/Src/WEI_can.c ****             motor_this->this ->total_angle = motor_this->this ->total_round * 360 + motor_this->thi
+  50:Core/Src/WEI_can.c **** 
+  51:Core/Src/WEI_can.c ****         }
+  52:Core/Src/WEI_can.c ****         else
+  53:Core/Src/WEI_can.c ****         {
+  54:Core/Src/WEI_can.c ****             //错误处理区域
+  55:Core/Src/WEI_can.c ****             break;
+  56:Core/Src/WEI_can.c ****         }
+  57:Core/Src/WEI_can.c ****     }
+  58:Core/Src/WEI_can.c **** }
+  59:Core/Src/WEI_can.c **** 
+  60:Core/Src/WEI_can.c **** void WEI_CAN_RxExplain(uint8_t* Data,DJI_Motor_Measure_s* aim) //适配8位数据的C620电调
+  61:Core/Src/WEI_can.c **** //依照规则将Data里的数据转移到aim里
+  62:Core/Src/WEI_can.c **** {
+  30              		.loc 1 62 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  63:Core/Src/WEI_can.c ****     aim->ecd = (Data[0] << 8) | Data[1];
+  35              		.loc 1 63 5 view .LVU1
+  36              		.loc 1 63 21 is_stmt 0 view .LVU2
+  37 0000 0278     		ldrb	r2, [r0]	@ zero_extendqisi2
+  38              		.loc 1 63 37 view .LVU3
+  39 0002 4378     		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+  40              		.loc 1 63 31 view .LVU4
+  41 0004 43EA0223 		orr	r3, r3, r2, lsl #8
+  42              		.loc 1 63 14 view .LVU5
+  43 0008 0B80     		strh	r3, [r1]	@ movhi
+  64:Core/Src/WEI_can.c ****     aim->speed_rpm = (Data[2] << 8) | Data[3];
+  44              		.loc 1 64 5 is_stmt 1 view .LVU6
+  45              		.loc 1 64 27 is_stmt 0 view .LVU7
+  46 000a 8278     		ldrb	r2, [r0, #2]	@ zero_extendqisi2
+  47              		.loc 1 64 43 view .LVU8
+  48 000c C378     		ldrb	r3, [r0, #3]	@ zero_extendqisi2
+  49              		.loc 1 64 37 view .LVU9
+  50 000e 43EA0223 		orr	r3, r3, r2, lsl #8
+  51              		.loc 1 64 20 view .LVU10
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s 			page 3
+
+
+  52 0012 4B80     		strh	r3, [r1, #2]	@ movhi
+  65:Core/Src/WEI_can.c ****     aim->real_current = (Data[4] << 8) | Data[5];
+  53              		.loc 1 65 5 is_stmt 1 view .LVU11
+  54              		.loc 1 65 30 is_stmt 0 view .LVU12
+  55 0014 0279     		ldrb	r2, [r0, #4]	@ zero_extendqisi2
+  56              		.loc 1 65 46 view .LVU13
+  57 0016 4379     		ldrb	r3, [r0, #5]	@ zero_extendqisi2
+  58              		.loc 1 65 40 view .LVU14
+  59 0018 43EA0223 		orr	r3, r3, r2, lsl #8
+  60              		.loc 1 65 23 view .LVU15
+  61 001c 8B80     		strh	r3, [r1, #4]	@ movhi
+  66:Core/Src/WEI_can.c ****     aim->temperature = Data[6];
+  62              		.loc 1 66 5 is_stmt 1 view .LVU16
+  63              		.loc 1 66 22 is_stmt 0 view .LVU17
+  64 001e 8379     		ldrb	r3, [r0, #6]	@ zero_extendqisi2
+  65 0020 8B71     		strb	r3, [r1, #6]
+  67:Core/Src/WEI_can.c **** }
+  66              		.loc 1 67 1 view .LVU18
+  67 0022 7047     		bx	lr
+  68              		.cfi_endproc
+  69              	.LFE135:
+  71              		.section	.text.WEI_CAN_RxExchange,"ax",%progbits
+  72              		.align	1
+  73              		.global	WEI_CAN_RxExchange
+  74              		.syntax unified
+  75              		.thumb
+  76              		.thumb_func
+  78              	WEI_CAN_RxExchange:
+  79              	.LVL1:
+  80              	.LFB134:
+   7:Core/Src/WEI_can.c ****     uint8_t can_rx_buff[8];
+  81              		.loc 1 7 1 is_stmt 1 view -0
+  82              		.cfi_startproc
+  83              		@ args = 0, pretend = 0, frame = 8
+  84              		@ frame_needed = 0, uses_anonymous_args = 0
+   7:Core/Src/WEI_can.c ****     uint8_t can_rx_buff[8];
+  85              		.loc 1 7 1 is_stmt 0 view .LVU20
+  86 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+  87              	.LCFI0:
+  88              		.cfi_def_cfa_offset 24
+  89              		.cfi_offset 4, -24
+  90              		.cfi_offset 5, -20
+  91              		.cfi_offset 6, -16
+  92              		.cfi_offset 7, -12
+  93              		.cfi_offset 8, -8
+  94              		.cfi_offset 14, -4
+  95 0004 82B0     		sub	sp, sp, #8
+  96              	.LCFI1:
+  97              		.cfi_def_cfa_offset 32
+  98 0006 0746     		mov	r7, r0
+  99 0008 0E46     		mov	r6, r1
+ 100 000a 1546     		mov	r5, r2
+   8:Core/Src/WEI_can.c ****     static CAN_RxHeaderTypeDef rxconf; //接收头段
+ 101              		.loc 1 8 5 is_stmt 1 view .LVU21
+   9:Core/Src/WEI_can.c ****     CANInstance* motor_this = NULL;
+ 102              		.loc 1 9 5 view .LVU22
+  10:Core/Src/WEI_can.c ****     while(HAL_CAN_GetRxFifoFillLevel(_hcan,fifox))
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s 			page 4
+
+
+ 103              		.loc 1 10 5 view .LVU23
+ 104              	.LVL2:
+  11:Core/Src/WEI_can.c ****     {
+ 105              		.loc 1 11 5 view .LVU24
+  11:Core/Src/WEI_can.c ****     {
+ 106              		.loc 1 11 10 is_stmt 0 view .LVU25
+ 107 000c 7BE0     		b	.L3
+ 108              	.LVL3:
+ 109              	.L6:
+ 110              	.LBB2:
+  18:Core/Src/WEI_can.c ****             {
+ 111              		.loc 1 18 35 is_stmt 1 discriminator 2 view .LVU26
+ 112 000e 0133     		adds	r3, r3, #1
+ 113              	.LVL4:
+ 114              	.L4:
+  18:Core/Src/WEI_can.c ****             {
+ 115              		.loc 1 18 29 discriminator 1 view .LVU27
+ 116 0010 032B     		cmp	r3, #3
+ 117 0012 11DC     		bgt	.L15
+  20:Core/Src/WEI_can.c ****             }
+ 118              		.loc 1 20 17 view .LVU28
+  20:Core/Src/WEI_can.c ****             }
+ 119              		.loc 1 20 31 is_stmt 0 view .LVU29
+ 120 0014 03F1040C 		add	ip, r3, #4
+ 121 0018 05EB8C0C 		add	ip, r5, ip, lsl #2
+ 122 001c DCF80420 		ldr	r2, [ip, #4]
+  20:Core/Src/WEI_can.c ****             }
+ 123              		.loc 1 20 19 view .LVU30
+ 124 0020 002A     		cmp	r2, #0
+ 125 0022 F4D0     		beq	.L6
+  20:Core/Src/WEI_can.c ****             }
+ 126              		.loc 1 20 60 discriminator 1 view .LVU31
+ 127 0024 9169     		ldr	r1, [r2, #24]
+  20:Core/Src/WEI_can.c ****             }
+ 128              		.loc 1 20 43 discriminator 1 view .LVU32
+ 129 0026 0029     		cmp	r1, #0
+ 130 0028 F1D0     		beq	.L6
+  20:Core/Src/WEI_can.c ****             }
+ 131              		.loc 1 20 92 discriminator 2 view .LVU33
+ 132 002a 1069     		ldr	r0, [r2, #16]
+  20:Core/Src/WEI_can.c ****             }
+ 133              		.loc 1 20 109 discriminator 2 view .LVU34
+ 134 002c 4449     		ldr	r1, .L17
+ 135 002e 0968     		ldr	r1, [r1]
+  20:Core/Src/WEI_can.c ****             }
+ 136              		.loc 1 20 75 discriminator 2 view .LVU35
+ 137 0030 8842     		cmp	r0, r1
+ 138 0032 ECD1     		bne	.L6
+  20:Core/Src/WEI_can.c ****             }
+ 139              		.loc 1 20 128 discriminator 3 view .LVU36
+ 140 0034 1446     		mov	r4, r2
+ 141              	.LVL5:
+  20:Core/Src/WEI_can.c ****             }
+ 142              		.loc 1 20 128 discriminator 3 view .LVU37
+ 143 0036 EAE7     		b	.L6
+ 144              	.LVL6:
+ 145              	.L15:
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s 			page 5
+
+
+  20:Core/Src/WEI_can.c ****             }
+ 146              		.loc 1 20 128 discriminator 3 view .LVU38
+ 147              	.LBE2:
+  23:Core/Src/WEI_can.c ****             {
+ 148              		.loc 1 23 13 is_stmt 1 view .LVU39
+  23:Core/Src/WEI_can.c ****             {
+ 149              		.loc 1 23 15 is_stmt 0 view .LVU40
+ 150 0038 002C     		cmp	r4, #0
+ 151 003a 73D0     		beq	.L16
+ 152              	.LVL7:
+ 153              	.L8:
+  28:Core/Src/WEI_can.c ****             memcpy(motor_this->rx_buff,can_rx_buff,rxconf.DLC); //消息拷贝到对应实例
+ 154              		.loc 1 28 13 is_stmt 1 view .LVU41
+  28:Core/Src/WEI_can.c ****             memcpy(motor_this->rx_buff,can_rx_buff,rxconf.DLC); //消息拷贝到对应实例
+ 155              		.loc 1 28 40 is_stmt 0 view .LVU42
+ 156 003c 404B     		ldr	r3, .L17
+ 157 003e 1A69     		ldr	r2, [r3, #16]
+  28:Core/Src/WEI_can.c ****             memcpy(motor_this->rx_buff,can_rx_buff,rxconf.DLC); //消息拷贝到对应实例
+ 158              		.loc 1 28 32 view .LVU43
+ 159 0040 2275     		strb	r2, [r4, #20]
+  29:Core/Src/WEI_can.c ****             motor_this->this->last_ecd = motor_this->this->ecd;
+ 160              		.loc 1 29 13 is_stmt 1 view .LVU44
+  29:Core/Src/WEI_can.c ****             motor_this->this->last_ecd = motor_this->this->ecd;
+ 161              		.loc 1 29 30 is_stmt 0 view .LVU45
+ 162 0042 04F10808 		add	r8, r4, #8
+  29:Core/Src/WEI_can.c ****             motor_this->this->last_ecd = motor_this->this->ecd;
+ 163              		.loc 1 29 13 view .LVU46
+ 164 0046 6946     		mov	r1, sp
+ 165 0048 4046     		mov	r0, r8
+ 166 004a FFF7FEFF 		bl	memcpy
+ 167              	.LVL8:
+  30:Core/Src/WEI_can.c **** 
+ 168              		.loc 1 30 13 is_stmt 1 view .LVU47
+  30:Core/Src/WEI_can.c **** 
+ 169              		.loc 1 30 52 is_stmt 0 view .LVU48
+ 170 004e A369     		ldr	r3, [r4, #24]
+  30:Core/Src/WEI_can.c **** 
+ 171              		.loc 1 30 58 view .LVU49
+ 172 0050 1A88     		ldrh	r2, [r3]
+  30:Core/Src/WEI_can.c **** 
+ 173              		.loc 1 30 40 view .LVU50
+ 174 0052 1A82     		strh	r2, [r3, #16]	@ movhi
+  33:Core/Src/WEI_can.c **** 
+ 175              		.loc 1 33 13 is_stmt 1 view .LVU51
+ 176 0054 A169     		ldr	r1, [r4, #24]
+ 177 0056 4046     		mov	r0, r8
+ 178 0058 FFF7FEFF 		bl	WEI_CAN_RxExplain
+ 179              	.LVL9:
+  36:Core/Src/WEI_can.c ****             motor_this->this ->speed_aps = (1.0f - 0.85f/*给上次数据加权*/) * motor_this->th
+ 180              		.loc 1 36 13 view .LVU52
+  36:Core/Src/WEI_can.c ****             motor_this->this ->speed_aps = (1.0f - 0.85f/*给上次数据加权*/) * motor_this->th
+ 181              		.loc 1 36 87 is_stmt 0 view .LVU53
+ 182 005c A369     		ldr	r3, [r4, #24]
+  36:Core/Src/WEI_can.c ****             motor_this->this ->speed_aps = (1.0f - 0.85f/*给上次数据加权*/) * motor_this->th
+ 183              		.loc 1 36 94 view .LVU54
+ 184 005e 1A88     		ldrh	r2, [r3]
+ 185 0060 07EE902A 		vmov	s15, r2	@ int
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s 			page 6
+
+
+  36:Core/Src/WEI_can.c ****             motor_this->this ->speed_aps = (1.0f - 0.85f/*给上次数据加权*/) * motor_this->th
+ 186              		.loc 1 36 70 view .LVU55
+ 187 0064 F8EE677A 		vcvt.f32.u32	s15, s15
+  36:Core/Src/WEI_can.c ****             motor_this->this ->speed_aps = (1.0f - 0.85f/*给上次数据加权*/) * motor_this->th
+ 188              		.loc 1 36 68 view .LVU56
+ 189 0068 9FED367A 		vldr.32	s14, .L17+4
+ 190 006c 67EE877A 		vmul.f32	s15, s15, s14
+  36:Core/Src/WEI_can.c ****             motor_this->this ->speed_aps = (1.0f - 0.85f/*给上次数据加权*/) * motor_this->th
+ 191              		.loc 1 36 51 view .LVU57
+ 192 0070 C3ED057A 		vstr.32	s15, [r3, #20]
+  37:Core/Src/WEI_can.c ****             motor_this->this ->real_current_handle = (1.0f - 0.5f) * motor_this->this ->real_curren
+ 193              		.loc 1 37 13 is_stmt 1 view .LVU58
+  37:Core/Src/WEI_can.c ****             motor_this->this ->real_current_handle = (1.0f - 0.5f) * motor_this->this ->real_curren
+ 194              		.loc 1 37 96 is_stmt 0 view .LVU59
+ 195 0074 A369     		ldr	r3, [r4, #24]
+  37:Core/Src/WEI_can.c ****             motor_this->this ->real_current_handle = (1.0f - 0.5f) * motor_this->this ->real_curren
+ 196              		.loc 1 37 103 view .LVU60
+ 197 0076 D3ED037A 		vldr.32	s15, [r3, #12]
+  37:Core/Src/WEI_can.c ****             motor_this->this ->real_current_handle = (1.0f - 0.5f) * motor_this->this ->real_curren
+ 198              		.loc 1 37 84 view .LVU61
+ 199 007a 9FED337A 		vldr.32	s14, .L17+8
+ 200 007e 67EE877A 		vmul.f32	s15, s15, s14
+  37:Core/Src/WEI_can.c ****             motor_this->this ->real_current_handle = (1.0f - 0.5f) * motor_this->this ->real_curren
+ 201              		.loc 1 37 160 view .LVU62
+ 202 0082 B3F90220 		ldrsh	r2, [r3, #2]
+ 203 0086 07EE102A 		vmov	s14, r2	@ int
+  37:Core/Src/WEI_can.c ****             motor_this->this ->real_current_handle = (1.0f - 0.5f) * motor_this->this ->real_curren
+ 204              		.loc 1 37 141 view .LVU63
+ 205 008a B8EEC77A 		vcvt.f32.s32	s14, s14
+ 206 008e DFED2F6A 		vldr.32	s13, .L17+12
+ 207 0092 27EE267A 		vmul.f32	s14, s14, s13
+  37:Core/Src/WEI_can.c ****             motor_this->this ->real_current_handle = (1.0f - 0.5f) * motor_this->this ->real_curren
+ 208              		.loc 1 37 115 view .LVU64
+ 209 0096 77EE877A 		vadd.f32	s15, s15, s14
+  37:Core/Src/WEI_can.c ****             motor_this->this ->real_current_handle = (1.0f - 0.5f) * motor_this->this ->real_curren
+ 210              		.loc 1 37 42 view .LVU65
+ 211 009a C3ED037A 		vstr.32	s15, [r3, #12]
+  38:Core/Src/WEI_can.c ****             
+ 212              		.loc 1 38 13 is_stmt 1 view .LVU66
+  38:Core/Src/WEI_can.c ****             
+ 213              		.loc 1 38 80 is_stmt 0 view .LVU67
+ 214 009e A369     		ldr	r3, [r4, #24]
+  38:Core/Src/WEI_can.c ****             
+ 215              		.loc 1 38 87 view .LVU68
+ 216 00a0 B3F90820 		ldrsh	r2, [r3, #8]
+ 217 00a4 07EE902A 		vmov	s15, r2	@ int
+  38:Core/Src/WEI_can.c ****             
+ 218              		.loc 1 38 68 view .LVU69
+ 219 00a8 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 220 00ac F6EE006A 		vmov.f32	s13, #5.0e-1
+ 221 00b0 67EEA67A 		vmul.f32	s15, s15, s13
+  38:Core/Src/WEI_can.c ****             
+ 222              		.loc 1 38 141 view .LVU70
+ 223 00b4 B3F90420 		ldrsh	r2, [r3, #4]
+ 224 00b8 07EE102A 		vmov	s14, r2	@ int
+  38:Core/Src/WEI_can.c ****             
+ 225              		.loc 1 38 118 view .LVU71
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s 			page 7
+
+
+ 226 00bc B8EEC77A 		vcvt.f32.s32	s14, s14
+  38:Core/Src/WEI_can.c ****             
+ 227              		.loc 1 38 116 view .LVU72
+ 228 00c0 27EE267A 		vmul.f32	s14, s14, s13
+  38:Core/Src/WEI_can.c ****             
+ 229              		.loc 1 38 109 view .LVU73
+ 230 00c4 77EE877A 		vadd.f32	s15, s15, s14
+  38:Core/Src/WEI_can.c ****             
+ 231              		.loc 1 38 52 view .LVU74
+ 232 00c8 FDEEE77A 		vcvt.s32.f32	s15, s15
+ 233 00cc 17EE902A 		vmov	r2, s15	@ int
+ 234 00d0 1A81     		strh	r2, [r3, #8]	@ movhi
+  40:Core/Src/WEI_can.c ****             {
+ 235              		.loc 1 40 13 is_stmt 1 view .LVU75
+  40:Core/Src/WEI_can.c ****             {
+ 236              		.loc 1 40 26 is_stmt 0 view .LVU76
+ 237 00d2 A369     		ldr	r3, [r4, #24]
+  40:Core/Src/WEI_can.c ****             {
+ 238              		.loc 1 40 33 view .LVU77
+ 239 00d4 1A88     		ldrh	r2, [r3]
+  40:Core/Src/WEI_can.c ****             {
+ 240              		.loc 1 40 58 view .LVU78
+ 241 00d6 198A     		ldrh	r1, [r3, #16]
+  40:Core/Src/WEI_can.c ****             {
+ 242              		.loc 1 40 39 view .LVU79
+ 243 00d8 521A     		subs	r2, r2, r1
+  40:Core/Src/WEI_can.c ****             {
+ 244              		.loc 1 40 15 view .LVU80
+ 245 00da B2F5805F 		cmp	r2, #4096
+ 246 00de 25DD     		ble	.L9
+  42:Core/Src/WEI_can.c ****             }
+ 247              		.loc 1 42 17 is_stmt 1 view .LVU81
+  42:Core/Src/WEI_can.c ****             }
+ 248              		.loc 1 42 34 is_stmt 0 view .LVU82
+ 249 00e0 DA69     		ldr	r2, [r3, #28]
+  42:Core/Src/WEI_can.c ****             }
+ 250              		.loc 1 42 48 view .LVU83
+ 251 00e2 013A     		subs	r2, r2, #1
+ 252 00e4 DA61     		str	r2, [r3, #28]
+ 253              	.L10:
+  49:Core/Src/WEI_can.c **** 
+ 254              		.loc 1 49 13 is_stmt 1 view .LVU84
+  49:Core/Src/WEI_can.c **** 
+ 255              		.loc 1 49 56 is_stmt 0 view .LVU85
+ 256 00e6 A269     		ldr	r2, [r4, #24]
+  49:Core/Src/WEI_can.c **** 
+ 257              		.loc 1 49 63 view .LVU86
+ 258 00e8 D369     		ldr	r3, [r2, #28]
+  49:Core/Src/WEI_can.c **** 
+ 259              		.loc 1 49 77 view .LVU87
+ 260 00ea 4FF4B471 		mov	r1, #360
+ 261 00ee 01FB03F3 		mul	r3, r1, r3
+ 262 00f2 07EE903A 		vmov	s15, r3	@ int
+  49:Core/Src/WEI_can.c **** 
+ 263              		.loc 1 49 102 view .LVU88
+ 264 00f6 92ED057A 		vldr.32	s14, [r2, #20]
+  49:Core/Src/WEI_can.c **** 
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s 			page 8
+
+
+ 265              		.loc 1 49 83 view .LVU89
+ 266 00fa F8EEE77A 		vcvt.f32.s32	s15, s15
+ 267 00fe 77EE877A 		vadd.f32	s15, s15, s14
+  49:Core/Src/WEI_can.c **** 
+ 268              		.loc 1 49 44 view .LVU90
+ 269 0102 C2ED067A 		vstr.32	s15, [r2, #24]
+ 270              	.LVL10:
+ 271              	.L3:
+  11:Core/Src/WEI_can.c ****     {
+ 272              		.loc 1 11 11 is_stmt 1 view .LVU91
+ 273 0106 3146     		mov	r1, r6
+ 274 0108 3846     		mov	r0, r7
+ 275 010a FFF7FEFF 		bl	HAL_CAN_GetRxFifoFillLevel
+ 276              	.LVL11:
+  11:Core/Src/WEI_can.c ****     {
+ 277              		.loc 1 11 11 is_stmt 0 discriminator 1 view .LVU92
+ 278 010e A0B1     		cbz	r0, .L2
+  13:Core/Src/WEI_can.c ****         //依据GetRxMessage得到的头段确定this指向谁
+ 279              		.loc 1 13 9 is_stmt 1 view .LVU93
+  13:Core/Src/WEI_can.c ****         //依据GetRxMessage得到的头段确定this指向谁
+ 280              		.loc 1 13 12 is_stmt 0 view .LVU94
+ 281 0110 6B46     		mov	r3, sp
+ 282 0112 0B4A     		ldr	r2, .L17
+ 283 0114 3146     		mov	r1, r6
+ 284 0116 3846     		mov	r0, r7
+ 285 0118 FFF7FEFF 		bl	HAL_CAN_GetRxMessage
+ 286              	.LVL12:
+  13:Core/Src/WEI_can.c ****         //依据GetRxMessage得到的头段确定this指向谁
+ 287              		.loc 1 13 11 discriminator 1 view .LVU95
+ 288 011c 68B9     		cbnz	r0, .L2
+ 289              	.LBB3:
+  18:Core/Src/WEI_can.c ****             {
+ 290              		.loc 1 18 21 view .LVU96
+ 291 011e 0023     		movs	r3, #0
+ 292              	.LBE3:
+  16:Core/Src/WEI_can.c **** 
+ 293              		.loc 1 16 24 view .LVU97
+ 294 0120 1C46     		mov	r4, r3
+ 295 0122 75E7     		b	.L4
+ 296              	.LVL13:
+ 297              	.L16:
+  25:Core/Src/WEI_can.c ****             }
+ 298              		.loc 1 25 17 is_stmt 1 view .LVU98
+  25:Core/Src/WEI_can.c ****             }
+ 299              		.loc 1 25 30 is_stmt 0 view .LVU99
+ 300 0124 0123     		movs	r3, #1
+ 301              	.LVL14:
+  25:Core/Src/WEI_can.c ****             }
+ 302              		.loc 1 25 30 view .LVU100
+ 303 0126 85F82430 		strb	r3, [r5, #36]
+ 304 012a 87E7     		b	.L8
+ 305              	.L9:
+  44:Core/Src/WEI_can.c ****             {
+ 306              		.loc 1 44 18 is_stmt 1 view .LVU101
+  44:Core/Src/WEI_can.c ****             {
+ 307              		.loc 1 44 20 is_stmt 0 view .LVU102
+ 308 012c 12F5805F 		cmn	r2, #4096
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s 			page 9
+
+
+ 309 0130 D9DA     		bge	.L10
+  46:Core/Src/WEI_can.c ****             }
+ 310              		.loc 1 46 17 is_stmt 1 view .LVU103
+  46:Core/Src/WEI_can.c ****             }
+ 311              		.loc 1 46 34 is_stmt 0 view .LVU104
+ 312 0132 DA69     		ldr	r2, [r3, #28]
+  46:Core/Src/WEI_can.c ****             }
+ 313              		.loc 1 46 48 view .LVU105
+ 314 0134 0132     		adds	r2, r2, #1
+ 315 0136 DA61     		str	r2, [r3, #28]
+ 316 0138 D5E7     		b	.L10
+ 317              	.LVL15:
+ 318              	.L2:
+  58:Core/Src/WEI_can.c **** 
+ 319              		.loc 1 58 1 view .LVU106
+ 320 013a 02B0     		add	sp, sp, #8
+ 321              	.LCFI2:
+ 322              		.cfi_def_cfa_offset 24
+ 323              		@ sp needed
+ 324 013c BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 325              	.LVL16:
+ 326              	.L18:
+  58:Core/Src/WEI_can.c **** 
+ 327              		.loc 1 58 1 view .LVU107
+ 328              		.align	2
+ 329              	.L17:
+ 330 0140 00000000 		.word	rxconf.0
+ 331 0144 0000343D 		.word	1026818048
+ 332 0148 9899193E 		.word	1041865112
+ 333 014c 3433A340 		.word	1084437300
+ 334              		.cfi_endproc
+ 335              	.LFE134:
+ 337              		.section	.text.WEI_CAN_DJIContorller_Init,"ax",%progbits
+ 338              		.align	1
+ 339              		.global	WEI_CAN_DJIContorller_Init
+ 340              		.syntax unified
+ 341              		.thumb
+ 342              		.thumb_func
+ 344              	WEI_CAN_DJIContorller_Init:
+ 345              	.LVL17:
+ 346              	.LFB136:
+  68:Core/Src/WEI_can.c **** 
+  69:Core/Src/WEI_can.c **** void WEI_CAN_DJIContorller_Init(DJI_Motor_Controller* aim)
+  70:Core/Src/WEI_can.c **** {
+ 347              		.loc 1 70 1 is_stmt 1 view -0
+ 348              		.cfi_startproc
+ 349              		@ args = 0, pretend = 0, frame = 0
+ 350              		@ frame_needed = 0, uses_anonymous_args = 0
+ 351              		@ link register save eliminated.
+  71:Core/Src/WEI_can.c ****     for(int i = 0;i < 4;i ++)
+ 352              		.loc 1 71 5 view .LVU109
+ 353              	.LBB4:
+ 354              		.loc 1 71 9 view .LVU110
+ 355              		.loc 1 71 13 is_stmt 0 view .LVU111
+ 356 0000 0023     		movs	r3, #0
+ 357              		.loc 1 71 5 view .LVU112
+ 358 0002 05E0     		b	.L20
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s 			page 10
+
+
+ 359              	.LVL18:
+ 360              	.L21:
+  72:Core/Src/WEI_can.c ****     {
+  73:Core/Src/WEI_can.c ****         aim->motor[i] = NULL;
+ 361              		.loc 1 73 9 is_stmt 1 view .LVU113
+ 362              		.loc 1 73 23 is_stmt 0 view .LVU114
+ 363 0004 1A1D     		adds	r2, r3, #4
+ 364 0006 00EB8202 		add	r2, r0, r2, lsl #2
+ 365 000a 0021     		movs	r1, #0
+ 366 000c 5160     		str	r1, [r2, #4]
+  71:Core/Src/WEI_can.c ****     for(int i = 0;i < 4;i ++)
+ 367              		.loc 1 71 27 is_stmt 1 discriminator 3 view .LVU115
+ 368 000e 0133     		adds	r3, r3, #1
+ 369              	.LVL19:
+ 370              	.L20:
+  71:Core/Src/WEI_can.c ****     for(int i = 0;i < 4;i ++)
+ 371              		.loc 1 71 21 discriminator 1 view .LVU116
+ 372 0010 032B     		cmp	r3, #3
+ 373 0012 F7DD     		ble	.L21
+ 374              	.LBE4:
+  74:Core/Src/WEI_can.c ****     }
+  75:Core/Src/WEI_can.c ****     aim->statue = WEI_OK;
+ 375              		.loc 1 75 5 view .LVU117
+ 376              		.loc 1 75 17 is_stmt 0 view .LVU118
+ 377 0014 0023     		movs	r3, #0
+ 378              	.LVL20:
+ 379              		.loc 1 75 17 view .LVU119
+ 380 0016 80F82430 		strb	r3, [r0, #36]
+  76:Core/Src/WEI_can.c **** }
+ 381              		.loc 1 76 1 view .LVU120
+ 382 001a 7047     		bx	lr
+ 383              		.cfi_endproc
+ 384              	.LFE136:
+ 386              		.section	.text.WEI_CAN_MotorInstance_Init,"ax",%progbits
+ 387              		.align	1
+ 388              		.global	WEI_CAN_MotorInstance_Init
+ 389              		.syntax unified
+ 390              		.thumb
+ 391              		.thumb_func
+ 393              	WEI_CAN_MotorInstance_Init:
+ 394              	.LVL21:
+ 395              	.LFB137:
+  77:Core/Src/WEI_can.c **** 
+  78:Core/Src/WEI_can.c **** void WEI_CAN_MotorInstance_Init(DJI_Motor_Measure_s* measure,CANInstance* motor,DJI_Motor_Controlle
+  79:Core/Src/WEI_can.c **** {
+ 396              		.loc 1 79 1 is_stmt 1 view -0
+ 397              		.cfi_startproc
+ 398              		@ args = 0, pretend = 0, frame = 0
+ 399              		@ frame_needed = 0, uses_anonymous_args = 0
+ 400              		@ link register save eliminated.
+  80:Core/Src/WEI_can.c ****     aim->motor[N] = motor;
+ 401              		.loc 1 80 5 view .LVU122
+ 402              		.loc 1 80 19 is_stmt 0 view .LVU123
+ 403 0000 0433     		adds	r3, r3, #4
+ 404              	.LVL22:
+ 405              		.loc 1 80 19 view .LVU124
+ 406 0002 02EB8302 		add	r2, r2, r3, lsl #2
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s 			page 11
+
+
+ 407              	.LVL23:
+ 408              		.loc 1 80 19 view .LVU125
+ 409 0006 5160     		str	r1, [r2, #4]
+  81:Core/Src/WEI_can.c ****     motor->this = measure;
+ 410              		.loc 1 81 5 is_stmt 1 view .LVU126
+ 411              		.loc 1 81 17 is_stmt 0 view .LVU127
+ 412 0008 8861     		str	r0, [r1, #24]
+  82:Core/Src/WEI_can.c **** }...
+ 413              		.loc 1 82 1 view .LVU128
+ 414 000a 7047     		bx	lr
+ 415              		.cfi_endproc
+ 416              	.LFE137:
+ 418              		.section	.bss.rxconf.0,"aw",%nobits
+ 419              		.align	2
+ 422              	rxconf.0:
+ 423 0000 00000000 		.space	28
+ 423      00000000 
+ 423      00000000 
+ 423      00000000 
+ 423      00000000 
+ 424              		.text
+ 425              	.Letext0:
+ 426              		.file 2 "D:/ProgramForRM/ARM_GNU_Toolchain/14.3 rel1/arm-none-eabi/include/machine/_default_types.
+ 427              		.file 3 "D:/ProgramForRM/ARM_GNU_Toolchain/14.3 rel1/arm-none-eabi/include/sys/_stdint.h"
+ 428              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 429              		.file 5 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"
+ 430              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 431              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_can.h"
+ 432              		.file 8 "Core/Inc/WEI_can.h"
+ 433              		.file 9 "D:/ProgramForRM/ARM_GNU_Toolchain/14.3 rel1/arm-none-eabi/include/string.h"
+ 434              		.file 10 "<built-in>"
+ARM GAS  C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s 			page 12
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 WEI_can.c
+C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s:21     .text.WEI_CAN_RxExplain:00000000 $t
+C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s:27     .text.WEI_CAN_RxExplain:00000000 WEI_CAN_RxExplain
+C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s:72     .text.WEI_CAN_RxExchange:00000000 $t
+C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s:78     .text.WEI_CAN_RxExchange:00000000 WEI_CAN_RxExchange
+C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s:330    .text.WEI_CAN_RxExchange:00000140 $d
+C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s:422    .bss.rxconf.0:00000000 rxconf.0
+C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s:338    .text.WEI_CAN_DJIContorller_Init:00000000 $t
+C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s:344    .text.WEI_CAN_DJIContorller_Init:00000000 WEI_CAN_DJIContorller_Init
+C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s:387    .text.WEI_CAN_MotorInstance_Init:00000000 $t
+C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s:393    .text.WEI_CAN_MotorInstance_Init:00000000 WEI_CAN_MotorInstance_Init
+C:\Users\WANGXI~1\AppData\Local\Temp\ccO7Rcum.s:419    .bss.rxconf.0:00000000 $d
+
+UNDEFINED SYMBOLS
+memcpy
+HAL_CAN_GetRxFifoFillLevel
+HAL_CAN_GetRxMessage
